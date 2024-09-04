@@ -1,12 +1,12 @@
 
 #include <SDL2/SDL.h>
 #include <iostream>
+#include "window.h"
 
 //-----------------------------MAP----------------------------------------------
 #define mapX  8      //map width
 #define mapY  8      //map height
-#define mapS 64      //map cube size
-#define mapRS 12
+#define mapS 48      //map cube size
 
 float sin_table[360]=
 {
@@ -409,48 +409,25 @@ int map[]=           //the map array. Edit to change level but keep the outer wa
 #define WW 640
 #define WH 480
 
-SDL_Window* win;
-SDL_Renderer* ren;
-SDL_Surface *bmp;
-Uint32 *pix;
-SDL_Texture *tex;
-SDL_Window* win0;
-SDL_Renderer* ren0;
-SDL_Surface *bmp0;
-Uint32 *pix0;
-SDL_Texture *tex0;
+Window* win;
+Window* mapWin;
 bool quit;
 
 void init(){
     SDL_Init(SDL_INIT_VIDEO);
-    win = SDL_CreateWindow("Window", 100, 100, WW, WH, SDL_WINDOW_SHOWN);
-    win0 = SDL_CreateWindow("Window", 100, 100, WW, WH, SDL_WINDOW_SHOWN);
-    ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    ren0 = SDL_CreateRenderer(win0, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    bmp = SDL_GetWindowSurface(win);
-    bmp0 = SDL_GetWindowSurface(win0);
-    pix = (Uint32*)(bmp->pixels);
-    pix0 = (Uint32*)(bmp0->pixels);
+    win = create("Window",WW,WH);
+    mapWin = create("Map",WW,WH);
 }
 
 void cleanup(){
-    SDL_DestroyTexture(tex);
-    SDL_DestroyRenderer(ren);
-    SDL_DestroyWindow(win);
+    cleanup(win);
+    cleanup(mapWin);
     SDL_Quit();
 }
 
-void render(bool clear){
-    if(clear) {SDL_RenderClear(ren); SDL_RenderClear(ren0);}
-    tex = SDL_CreateTextureFromSurface(ren,bmp);
-    SDL_RenderCopy(ren, tex, NULL, NULL);
-    SDL_RenderPresent(ren);
-    tex0 = SDL_CreateTextureFromSurface(ren0,bmp0);
-    SDL_RenderCopy(ren0,tex0, NULL, NULL);
-    SDL_RenderPresent(ren0);
-}
 void render(){
-    render(false);
+    render(win);
+    render(mapWin);
 }
 
 void handleEvents(){
@@ -466,22 +443,9 @@ void handleEvents(){
         }
     }
 }
-
-void drawPix(Uint32* pixels,int x, int y, int cl){
-    pixels[y*WW+x]=cl;
-}
-
-void drawRect(Uint32* pixels, int x, int y, int w, int h, int cl){
-    for(int i = 0; i < w; i++){
-        for(int j = 0 ; j < h; j++){
-            drawPix(pixels,x+i,y+j,cl);
-        }
-    }
-}
-
-void drawMap(Uint32* pixels, int x, int y, int size, int mw, int mh, int fCl, int bCl, int* map){
+void drawMap(Window* win, int x, int y, int size, int mw, int mh, int fCl, int bCl, int* map){
     for(int i = 0; i < mw; i++) for(int j = 0; j < mh; j++){
-        drawRect(pixels, x+i*size, y+j*size, size, size, map[j*mw+i] != 0 ? fCl : bCl);
+        drawRect(win, x+i*size, y+j*size, size, size, map[j*mw+i] != 0 ? fCl : bCl);
     }
 }
 
@@ -491,7 +455,7 @@ void display(){
     while(true){
 		handleEvents();
 		if (quit) break;
-        drawMap(pix0,0,0,48,8,8,0xFFFFFF,0,map);
+        drawMap(mapWin,0,0,mapS,mapX,mapY,0xFFFFFF,0,map);
         render();
     }
 }

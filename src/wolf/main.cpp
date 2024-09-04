@@ -397,8 +397,8 @@ int myRound(float a){
 int map[]=           //the map array. Edit to change level but keep the outer walls
 {
     1,1,1,1,1,1,1,1,
-    1,0,1,0,0,0,0,1,
-    1,0,1,0,0,0,0,1,
+    1,0,1,1,1,0,0,1,
+    1,0,1,1,1,1,0,1,
     1,0,1,0,0,0,0,1,
     1,0,0,0,0,0,0,1,
     1,0,0,0,0,1,0,1,

@@ -1,7 +1,7 @@
 #include "window.h"
 
 void drawPixel(Window* win, Uint32 x, Uint32 y, Uint32 cl){
-    if(x > 0 || x < win->w || y > 0 || y < win->h){
+    if(x > 0 && x < win->w && y > 0 && y < win->h){
         win->pix[(y*(win->w))+x] = cl;
     }
 }
@@ -12,16 +12,19 @@ void drawRect(Window* win, Uint32 x, Uint32 y, Uint32 w, Uint32 h, Uint32 cl){
         }
     }
 }
+void drawLine(Window* win, Uint32 x0, Uint32 y0, Uint32 x1, Uint32 y1, Uint32 cl){
+
+}
 Uint32 getPixel(Window* win, Uint32 x, Uint32 y){
-    if(x > 0 || x < win->w || y > 0 || y < win->h){
+    if(x > 0 && x < win->w && y > 0 && y < win->h){
         return win->pix[x*win->h+y];
     }
     return 0;
 }
 void render(Window* win){
-    SDL_RenderClear(win->ren);
-    win->tex = SDL_CreateTextureFromSurface(win->ren,win->surf);
-    SDL_RenderCopy(win->ren, win->tex, NULL, NULL);
+    //SDL_RenderClear(win->ren);
+    // win->tex = SDL_CreateTextureFromSurface(win->ren,win->surf);
+    // SDL_RenderCopy(win->ren, win->tex, NULL, NULL);
     SDL_RenderPresent(win->ren);
 }
 Window* create(const char* name, Uint32 w, Uint32 h){

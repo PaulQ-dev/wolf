@@ -129,8 +129,8 @@ void drawMap(Window* win, int x, int y, int size, int mw, int mh, int* map){
 }
 void drawPlr(Window* win, Player* plr, int size){
     SDL_SetRenderDrawColor(win->ren,255,255,255,255);
-    float dx = plr->y+(size/2)*dcos(plr->a);
-    float dy = plr->x+(size/2)*dsin(plr->a);
+    float dx = plr->x+(size/2)*dcos(plr->a);
+    float dy = plr->y-(size/2)*dsin(plr->a);
     for(int i = 0; i < 360; i++){
         SDL_RenderDrawPoint(win->ren,round(plr->x+(size/2)*dcos(i)),round(plr->y+(size/2)*dsin(i)));
     }
@@ -143,7 +143,7 @@ void display(){
     while(true){
 		handleEvents();
 		if (quit) break;
-        plr->a += spdA;
+        plr->a -= spdA;
         float spdX = spd*dcos(plr->a);
         float spdY = spd*dsin(plr->a);
         int nextSX = (plr->x+spdX)/mapS;

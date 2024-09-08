@@ -22,7 +22,7 @@ Uint32 getPixel(Window* win, Uint32 x, Uint32 y){
     return 0;
 }
 void render(Window* win){
-    //SDL_RenderClear(win->ren);
+    // SDL_RenderClear(win->ren);
     // win->tex = SDL_CreateTextureFromSurface(win->ren,win->surf);
     // SDL_RenderCopy(win->ren, win->tex, NULL, NULL);
     SDL_RenderPresent(win->ren);

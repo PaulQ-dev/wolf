@@ -15,7 +15,7 @@ float dsin(float deg){
 float dcos(float deg){
     return cos(deg/180.0*M_PI);
 }
-int sgn(int a){
+int sgn(float a){
     return a > 0 ? 1 : a < 0 ? -1 : 0;
 }
 
@@ -42,7 +42,6 @@ typedef struct{
 #define PS 10
 
 Window* win;
-Window* mapWin;
 Player* plr;
 bool quit;
 float spd, spdA;
@@ -53,7 +52,6 @@ int plrSX, plrSY;
 void init(){
     SDL_Init(SDL_INIT_VIDEO);
     win = create("Window",WW,WH);
-    mapWin = create("Map",WW,WH);
     plr = (Player*)malloc(sizeof(Player));
     plr->x = mapX*mapS/2;
     plr->y = mapY*mapS/2;
@@ -61,14 +59,12 @@ void init(){
 
 void cleanup(){
     cleanup(win);
-    cleanup(mapWin);
     SDL_Quit();
 }
 
 void render(){
-    SDL_SetRenderDrawColor(mapWin->ren,0,0,0,255);
+    SDL_SetRenderDrawColor(win->ren,0,0,0,255);
     render(win);
-    render(mapWin);
 }
 
 void handleEvents(){
@@ -137,7 +133,27 @@ void drawPlr(Window* win, Player* plr, int size){
     SDL_SetRenderDrawColor(win->ren,255,0,0,255);
     SDL_RenderDrawLine(win->ren,round(plr->x),round(plr->y),round(dx),round(dy));
 }
-void drawRay(Window win, Player plr, int cl);
+float drawRay(Window* win, Player* plr, float a){
+    float dx = dcos(a);
+    float dy = dsin(a);
+    float x = plr->x;
+    float y = plr->y;
+
+    while(map[(int)y/mapS*mapX+(int)x/mapS]==0){
+        x+=dx*.1;
+        y-=dy*.1;
+    }
+    SDL_SetRenderDrawColor(win->ren,255,255,0,255);
+    // SDL_RenderDrawLine(win->ren, plr->x+dcos(plr->a)*PS/2, plr->y-dsin(plr->a)*PS/2, x, y);
+    return sqrtf((x-plr->x)*(x-plr->x)+(y-plr->y)*(y-plr->y));
+}
+void drawWallSlice(Window* win, int x, float h, float d){
+    int y = floor(WH/2-h/2);
+    int cl = 255-(int)((float)d/800.0*255);
+    SDL_SetRenderDrawColor(win->ren,cl,cl,0,255);
+    SDL_RenderDrawLine(win->ren, x,y,x,y+h);
+    SDL_RenderDrawLine(win->ren, x+1,y,x+1,y+h);
+}
 
 void display(){
     while(true){
@@ -146,8 +162,8 @@ void display(){
         plr->a -= spdA;
         float spdX = spd*dcos(plr->a);
         float spdY = spd*dsin(plr->a);
-        int nextSX = (plr->x+spdX)/mapS;
-        int nextSY = (plr->y-spdY)/mapS;
+        int nextSX = (plr->x+spdX+PS/2*sgn(spdX))/mapS;
+        int nextSY = (plr->y-spdY-PS/2*sgn(spdY))/mapS;
         if(map[plrSY*mapX+nextSX]==0) {
             plr->x+=spdX/2;
         }
@@ -160,8 +176,26 @@ void display(){
         }
         plrSX = (int)(plr->x)/mapS;
         plrSY = (int)(plr->y)/mapS;
-        drawMap(mapWin,0,0,mapS,mapX,mapY,map);
-        drawPlr(mapWin, plr, PS);
+        // drawMap(win,0,0,mapS,mapX,mapY,map);
+        SDL_Rect rect;
+        rect.x = 0;
+        rect.y = 0;
+        rect.w = WW;
+        rect.h = WH/2;
+        SDL_SetRenderDrawColor(win->ren, 0,0,0,255);
+        SDL_RenderFillRect(win->ren, &rect);
+        rect.y = WH/2;
+        SDL_SetRenderDrawColor(win->ren, 63,63,63,255);
+        SDL_RenderFillRect(win->ren, &rect);
+        int rays = WW/2;
+        float da = 70.0/(float)rays;
+        for(int i = 0; i < rays; i++){
+            float a = (plr->a)-35+(float)i*da;
+            float d = drawRay(win, plr, a);
+            d = d * dcos(a-plr->a);
+            drawWallSlice(win,WW-i*2-2,((float)WH)/2/d*mapS,d);
+        }
+        // drawPlr(win, plr, PS);
         render();
     }
 }
@@ -170,5 +204,6 @@ int main(){
     init();
     display();
     cleanup();
+    return 0;
 }
 

@@ -13,10 +13,6 @@ typedef struct
     Uint32 h;
 } Window;
 
-void drawPixel(Window* window, Uint32 x, Uint32 y, Uint32 color);
-void drawRect(Window* window, Uint32 x, Uint32 y, Uint32 width, Uint32 height, Uint32 color);
-void drawLine(Window* window, Uint32 x0, Uint32 y0, Uint32 x1, Uint32 y1, Uint32 color);
-Uint32 getPixel(Window* window, Uint32 x, Uint32 y);
 void render(Window* window);
 Window* create(const char* name, Uint32 width, Uint32 height);
 void cleanup(Window* window);

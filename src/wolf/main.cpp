@@ -9,6 +9,10 @@
 #define M_PI 3.141592654
 #endif
 
+#define minimapN 9
+#define minimapS 28
+#define minimapPlS 6
+
 float dsin(float deg){
     return sin(deg/180.0*M_PI);
 }
@@ -47,8 +51,8 @@ void init(){
     win = create("Window",winW,winH);
     plr = (Player*)malloc(sizeof(Player));
     memcpy(map, mapAr, mapW*mapH*sizeof(int));
-    plr->x = mapS*plrStX;
-    plr->y = mapS*plrStY;
+    plr->x = mapS*(plrStX+.5);
+    plr->y = mapS*(plrStY+.5);
     plr->a = 90;
 }
 
@@ -86,8 +90,8 @@ void handleEvents(){
                 spdA = -rotS;
                 break;
             case SDLK_e:
-                spdX = dcos(plr->a);
-                spdY = dsin(plr->a);
+                spdX = mapS/2*dcos(plr->a);
+                spdY = mapS/2*dsin(plr->a);
                 nextSX = (plr->x+spdX+plrS/2*sgn(spdX))/mapS;
                 nextSY = (plr->y-spdY-plrS/2*sgn(spdY))/mapS;
                 if(map[nextSY*mapW+nextSX] == 2){
@@ -117,6 +121,11 @@ void handleEvents(){
             case SDLK_m:
                 mapM = false;
                 break;
+            case SDLK_p:
+                memcpy(map, mapAr, mapW*mapH*sizeof(int));
+                plr->x = mapS*(plrStX+.5);
+                plr->y = mapS*(plrStY+.5);
+                plr->a = 90;
             default:
                 break;
             }
@@ -134,13 +143,13 @@ float drawRay(Window* win, Player* plr, float a, Uint8* cl){
     }
     int val = map[(int)y/mapS*mapW+(int)x/mapS];
     if(val == 1){
-        cl[0] = 255;
-        cl[1] = 255;
-        cl[2] = 0;
+        cl[0] = 128;
+        cl[1] = 128;
+        cl[2] = 96;
     }else if(val == 2){
-        cl[0] = 0;
-        cl[1] = 255;
-        cl[2] = 0;
+        cl[0] = 128;
+        cl[1] = 128;
+        cl[2] = 128;
     }
     return sqrtf((x-plr->x)*(x-plr->x)+(y-plr->y)*(y-plr->y));
 }
@@ -175,25 +184,27 @@ void draw3d(){
     }
 }
 void draw2d(){
-    int x = winW-mapW*mapS/2;
+    int x = winW-minimapN*minimapS;
     SDL_Rect rect;
-    rect.w = mapS/2;
-    rect.h = mapS/2;
-    for(int i = 0; i < mapW; i++) for(int j = 0; j < mapH; j++){
-        if(map[j*mapW+i]) SDL_SetRenderDrawColor(win->ren,255,255,255,255);
+    rect.w = minimapS;
+    rect.h = minimapS;
+    for(int i = 0; i < minimapN; i++) for(int j = 0; j < minimapN; j++){
+        int jS = j-(minimapN/2)+plrSY, iS = i-(minimapN/2)+plrSX;
+        if(jS < 0 || iS < 0 || jS > mapH || iS > mapW || map[(jS)*mapW+(iS)]) SDL_SetRenderDrawColor(win->ren,255,255,255,255);
         else SDL_SetRenderDrawColor(win->ren,0,0,0,255);
-        rect.x = x+i*mapS/2;
-        rect.y = j*mapS/2;
+        rect.x = x+i*minimapS;
+        rect.y = j*minimapS;
         SDL_RenderFillRect(win->ren, &rect);
     }
     SDL_SetRenderDrawColor(win->ren,255,0,0,255);
+    int plPos = minimapN*minimapS/2;
     SDL_Point lines[3];
-    lines[0].x = x+round(plr->x/2+plrS/2*dcos(plr->a+120));
-    lines[0].y = round(plr->y/2-plrS/2*dsin(plr->a+120));
-    lines[1].x = x+round(plr->x/2+plrS/2*dcos(plr->a));
-    lines[1].y = round(plr->y/2-plrS/2*dsin(plr->a));
-    lines[2].x = x+round(plr->x/2+plrS/2*dcos(plr->a-120));
-    lines[2].y = round(plr->y/2-plrS/2*dsin(plr->a-120));
+    lines[0].x = x+round(plPos+minimapPlS*dcos(plr->a+120));
+    lines[0].y = round(plPos-minimapPlS*dsin(plr->a+120));
+    lines[1].x = x+round(plPos+minimapPlS*dcos(plr->a));
+    lines[1].y = round(plPos-minimapPlS*dsin(plr->a));
+    lines[2].x = x+round(plPos+minimapPlS*dcos(plr->a-120));
+    lines[2].y = round(plPos-minimapPlS*dsin(plr->a-120));
     SDL_RenderDrawLines(win->ren, lines, 3);
 }
 

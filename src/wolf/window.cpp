@@ -5,7 +5,7 @@ void render(Window* win){
 }
 Window* create(const char* name, Uint32 w, Uint32 h){
     Window* win = (Window*)malloc(sizeof(Window));
-    win->win = SDL_CreateWindow(name,0,0,w,h,SDL_WINDOW_SHOWN);
+    win->win = SDL_CreateWindow(name,10,10,w,h,SDL_WINDOW_SHOWN);
     win->ren = SDL_CreateRenderer(win->win,-1,SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     win->surf = SDL_GetWindowSurface(win->win);
     win->pix = (Uint32*)(win->surf->pixels);

@@ -9,8 +9,8 @@ typedef struct
     SDL_Surface* surf;
     SDL_Texture* tex;
     Uint32* pix;
-    Uint32 w;
-    Uint32 h;
+    Sint32 w;
+    Sint32 h;
 } Window;
 
 void render(Window* window);

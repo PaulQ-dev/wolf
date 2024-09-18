@@ -4,9 +4,9 @@ map_t* createMap0(){
     map_t* map0 = (map_t*)malloc(sizeof(map_t));
     map0->w = 24;
     map0->h = 24;
-    map0->stX = 2;
-    map0->stY = 2;
-    map0->clW_r = 144; map0->clW_g = 144; map0->clW_b = 128;
+    map0->start.x = 2;
+    map0->start.y = 2;
+    map0->clW_r = 128; map0->clW_g = 128; map0->clW_b = 96;
     map0->clD_r = 128; map0->clD_g = 128; map0->clD_b = 128;
     map0->clF_r =  64; map0->clF_g =  64; map0->clF_b =  64;
     map0->clC_r =   0; map0->clC_g =   0; map0->clC_b =  48;
@@ -42,7 +42,40 @@ map_t* createMap0(){
     return map0;
 }
 
+map_t* createMap1(){
+    map_t* map1 = (map_t*)malloc(sizeof(map_t));
+    map1->w = 3;
+    map1->h = 8;
+    map1->start.x = 1;
+    map1->start.y = 1;
+    map1->clW_r = 128; map1->clW_g = 128; map1->clW_b = 96;
+    map1->clD_r = 128; map1->clD_g = 128; map1->clD_b = 128;
+    map1->clF_r =  64; map1->clF_g =  64; map1->clF_b =  64;
+    map1->clC_r =   0; map1->clC_g =   0; map1->clC_b =  48;
+    map1->map = (int*)calloc(map1->w*map1->h, sizeof(int));
+    int mapAr[3*8]=
+    {
+        1,1,1,
+        1,0,1,
+        1,2,1,
+        1,0,1,
+        1,0,1,
+        1,2,1,
+        1,0,1,
+        1,3,1,
+    };
+    memcpy(map1->map, mapAr, map1->w*map1->h*sizeof(int));
+    return map1;
+}
+
 void mapDispose(map_t* map){
     free(map->map);
     free(map);
+}
+
+mapPos* getMapSectorFromPoint(int x, int y){
+    mapPos* pos = (mapPos*)malloc(sizeof(mapPos));
+    pos->x = x/mapS;
+    pos->y = y/mapS;
+    return pos;
 }

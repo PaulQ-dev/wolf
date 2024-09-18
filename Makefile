@@ -27,9 +27,12 @@ obj/wolf/map.o: src/wolf/map.cpp
 obj/wolf/main.o: src/wolf/main.cpp
 	@echo "Compiling src/wolf/main.cpp"
 	@$(GXX) -c -o $@ $< -Isrc/wolf -lSDL2
+obj/wolf/generic.o: src/wolf/generic.cpp
+	@echo "Compiling src/wolf/generic.cpp"
+	@$(GXX) -c -o $@ $< -Isrc/wolf -lSDL2
 obj/wolf/window.o: src/wolf/window.cpp
 	@echo "Compiling src/wolf/window.cpp"
 	@$(GXX) -c -o $@ $< -Isrc/wolf -lSDL2
-wolf: obj/wolf/map.o obj/wolf/main.o obj/wolf/window.o
+wolf: obj/wolf/map.o obj/wolf/main.o obj/wolf/generic.o obj/wolf/window.o
 	@echo "Combining wolf"
 	@$(GXX) -o bin/wolf $^ -Isrc/wolf -lSDL2
